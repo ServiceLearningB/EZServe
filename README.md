@@ -4,6 +4,7 @@ Instructions
 Sam Was Here
 Cienna was also here
 Michelle was here
+Jacques was here
 
 1.) When server is booted run the following commands as root.
 
