@@ -3,23 +3,28 @@
 }
 
 .EZ_navbar {
-	background-color:rgb(166, 20, 20);
+	background-color:rgb(26, 187, 207);
 	color:white;
 	width:100%;
-	text-align: center;
 	position: relative;
 }
 
-/* .EZ_fontstyle {
-font-family: Ubuntu;
-} */
-
 .EZ_logincontainer {
-	outline: 1px solid grey;
+	border: 1px solid grey;
+	border-radius: 6px;
 	width: 40%;
 	position:relative;
 	float: left;
-	margin:10px;
+	margin-top:20px;
 	padding:20px;
 	left:30%;
+	background-color:white;
+}
+
+.EZ_logo {
+	height: 100%;
+	position: relative;
+	float: left;
+	margin-left: 10px;
+	margin-top: -8px;
 }
