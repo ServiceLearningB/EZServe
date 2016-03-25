@@ -15,15 +15,25 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from submit_reports.views import submit_page
+from submit_reports.views import *
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.views import login
 admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^submit_report', submit_page, name='submit_page'),
+    url(r'^submit_report/', submit_page, name='submit_page'),
+    url(r'^accounts/login/', login_view, name='login_page'),
+    url(r'^accounts/auth/', auth_view, name='authorization_page'),
+    url(r'^accounts/logout/', logout_view, name='logout_page'),
+    url(r'^accounts/loggedin/', logged_in_view, name='logged_in_page'),
+    url(r'^accounts/invalid/', invalid_login_view, name='invalid_login_page'),
 ]
+
+#authentication urls
+
+
 """
 if settings.DEBUG:
 	urlpatterns += static(settings.STATIC_URL,
