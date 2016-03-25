@@ -1,0 +1,18 @@
+[
+{
+    "model": "submit_reports.student",
+    "pk": 1,
+    "fields": {
+        "user": 2,
+        "nuid": 1
+    }
+},
+{
+    "model": "submit_reports.student",
+    "pk": 2,
+    "fields": {
+        "user": 3,
+        "nuid": 2
+    }
+}
+]
