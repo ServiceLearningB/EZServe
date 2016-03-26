@@ -3,11 +3,13 @@ from .forms import SubmitReportForm
 from .models import SubmitReport, Student
 from django.http import HttpResponseRedirect
 from django.contrib import auth
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
+@login_required
 def submit_page(request):
-	student = Student.objects.filter(nuid=nuid)
+	#student = Student.objects.filter(nuid=nuid)
 	form = SubmitReportForm(request.POST or None)
 	if form.is_valid():
 		save_form = form.save(commit=False)
@@ -19,17 +21,8 @@ def submit_page(request):
 def login_view(request):
 	c = {}
 	c.update(csrf(request))
-	return render_to_response('login.html')
-	username = request.POST['username']
-	password = request.POST['password']
-	user = authenticate(username=username, password=password)
-	if user is not None:
-		if user.is_active:
-			login(request, user)
+	return render_to_response('login.html', c)
 
-		else:
-			error = u'account disabled'
-			return errorHandle(error)
 
 def auth_view(request):
 	username = request.POST.get('username', '')
@@ -45,6 +38,7 @@ def logout_view(request):
 	auth.logout(request)
 	return render_to_response('logout.html')
 
+@login_required
 def logged_in_view(request):
 	return render_to_response('loggedin.html',
 		{'username': request.user.username})
