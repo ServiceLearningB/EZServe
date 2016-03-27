@@ -1,5 +1,5 @@
 from django.shortcuts import render, render_to_response, RequestContext
-from .forms import SubmitReportForm
+from .forms import SubmitReportForm, AddPartnerForm
 from .models import SubmitReport, Student, Faculty, Staff
 from django.http import HttpResponseRedirect
 from django.contrib import auth
@@ -15,16 +15,20 @@ def submit_page(request):
 	student = Student.objects.get(user=request.user)
 	form = SubmitReportForm(request.POST or None)
 	if form.is_valid():
-		save_form = form.save(commit=True)
+		save_form = form.save(commit=False)
 		save_form.submitter=student
-		#save_form.save()
+		save_form.save()
+		save_form.save_m2m()
 		return HttpResponseRedirect('/accounts/loggedin')
-	return render(request, "submit_report.html")
+	return render_to_response("submit_report.html",
+		locals(),
+		context_instance=RequestContext(request))
 
 
 class FacultyView(UserPassesTestMixin, ListView):
 	"""Page for faculty to view student records"""
 	model = Faculty
+	#form = FacultyQueryForm(request.POST or None)
 
 	def get_queryset(self):
 		if form.is_valid():
@@ -56,17 +60,37 @@ def auth_view(request):
 def logout_view(request):
 	"""Page for users which have just logged out"""
 	auth.logout(request)
-	return render(request, 'logout.html')
+	return render_to_response('logout.html')
 
 
 @user_passes_test(lambda u: u.is_superuser or u.student is not None)
 def student_logged_in_view(request):
 	"""Homepage for logged in users"""
-	return render(request, 'loggedin.html',
+	return render_to_response('loggedin.html',
 		{'username': request.user.username})
 
 
 def invalid_login_view(request):
 	"""Page for users who have not successfully logged in"""
-	return render(render, 'invalid_login.html')
+	return render_to_response('invalid_login.html')
 
+
+@user_passes_test(lambda u: u.is_superuser or u.adminstaff is not None)
+def admin_home_view(request):
+	"""Homepage for logged in admin"""
+	return render_to_response('admin_loggedin.html',
+		{'username': request.user.username})
+
+@user_passes_test(lambda u: u.is_superuser or u.adminstaff is not None)
+def add_partners_view(request):
+	'''Page for adding partners'''
+	form = AddPartnerForm(request.POST or None)
+	if form.is_valid():
+		save_form = form.save(commit=False)
+		save_form.save()
+		if '_add_another' in request.POST:
+			return HttpResponseRedirect('/admin/add_partner')
+		return HttpResponseRedirect('/admin/home')
+	return render_to_response("add_partner.html",
+		locals(),
+		context_instance=RequestContext(request))

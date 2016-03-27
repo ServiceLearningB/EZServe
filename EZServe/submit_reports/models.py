@@ -38,11 +38,15 @@ ServiceType = (
 
 class Student(models.Model):
 	numeric = RegexValidator(r'^[0-9]*$', 'only numbers allowed')
-
-	user = models.OneToOneField(User, null=True)
+	user = models.OneToOneField(User, null=True, unique=True, on_delete=models.SET_NULL)
+	first_name = models.CharField(max_length=30, null=True, blank=False)
+	last_name = models.CharField(max_length=30, null=True, blank=False)
 	nuid = models.IntegerField(null=False, blank=False, default=0)
 	courses = models.ManyToManyField('Course')
 	grad_year = models.CharField(validators=[numeric], max_length=4, null=True)
+
+	class Meta:
+		unique_together = ('nuid', 'user')
 
 	def __unicode__(self):
 		return self.user.first_name + " " + self.user.last_name + " (" + str(self.nuid) + ")"
@@ -78,7 +82,7 @@ class SubmitReport(models.Model):
 	service_type = models.CharField(max_length=14, null=True, blank=False)
 	status = models.CharField(max_length=8, choices=ApprovalStatus, default='PENDING', null=False, blank=False)
 	summary = models.CharField(max_length=150, null=True, blank=True)
-	submitter = models.ForeignKey(Student, null=True)
+	submitter = models.ForeignKey(Student, null=True, on_delete=models.PROTECT)
 		
 	def __unicode__(self):
 		return (self.submitter.__unicode__() + " start: " + self.start_time.strftime('%Y-%m-%d %H:%M') +
@@ -89,7 +93,7 @@ class Course(models.Model):
 	instructor = models.ForeignKey(Faculty, null=True, blank=False)
 	college = models.CharField(choices=College, default='NONE', max_length=7)
 	course_number = models.CharField(max_length=10, null=True)
-	CRN = models.CharField(validators=[numeric], max_length=5)
+	CRN = models.CharField(validators=[numeric], max_length=5, unique=True)
 
 	def __unicode__(self):
 		return self.course_number + ": " + self.CRN
