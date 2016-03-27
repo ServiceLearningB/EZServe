@@ -1,34 +1,85 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
-from datetime import date
+from datetime import date, time, datetime
+from django.core.validators import RegexValidator
+from annoying.fields import JSONField
 
 # Create your models here.
-class Student(models.Model):
-	first_name = models.CharField(max_length=30, null=True)
-	last_name = models.CharField(max_length=30, null=True)
-	user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-	nuid = models.IntegerField(null=False, blank=False, default=0)
 
-	def __str__(self):
-		return "%S %S" % (self.first_name, self.last_name)
+#list of all choices for colleges
+College = (
+		('CAMD', 'CAMD'),
+		('CCIS', 'CCIS'),
+		('COS', 'COS'),
+		('CSSH', 'CSSH'),
+		('BOUVE', 'BOUVE'),
+		('DMSB', 'DMSB'),
+		('COE', 'COE'),
+		('LAW', 'LAW'),
+		('CPS', 'CPS'),
+		('PROVOST', 'PROVOST'),
+	)
+
+ApprovalStatus = (
+		('PENDING', 'PENDING'),
+		('APPROVED', 'APPROVED'),
+		('REJECTED', 'REJECTED'),
+	)
+
+# User Classes
+####################################################
+
+class Student(models.Model):
+	numeric = RegexValidator(r'^[0-9]*$', 'only numbers allowed')
+
+	user = models.OneToOneField(User, null=True)
+	nuid = models.IntegerField(null=False, blank=False, default=0)
+	courses = models.ManyToManyField('Course')
+	grad_year = models.CharField(validators=[numeric], max_length=4, null=True)
+
+	def __unicode__(self):
+		return self.user.first_name + " " + self.user.last_name + " (" + str(self.nuid) + ")"
 
 class Faculty(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+	user = models.OneToOneField(User, null=True)
+
+	def __unicode__(self):
+		return self.user.first_name + " " + self.user.last_name
+
+
+class Staff(models.Model):
+	user = models.OneToOneField(User, null=True)
+
+	def __unicode__(self):
+		return self.user.first_name + " " + self.user.last_name
+
+# Data Classes
+######################################################
+
+class SubmitReport(models.Model):
+
+	start_time = models.DateTimeField(auto_now_add=False, auto_now=False, default=datetime.now)
+	end_time = models.DateTimeField(auto_now_add=False, auto_now=False, default=datetime.now)
+	courses = models.ManyToManyField('Course')
+	summary = models.CharField(max_length=150, null=True, blank=True)
+	submitter = models.ForeignKey(Student, null=True)
+		
+	def __unicode__(self):
+		return (self.submitter.__unicode__() + " start: " + self.start_time.strftime('%Y-%m-%d %H:%M') +
+		" end: " + self.end_time.strftime('%Y-%m-%d %H:%M'))
 
 class Course(models.Model):
-	instructor = models.ForeignKey(Faculty, on_delete=models.CASCADE, null=True)
+	numeric = RegexValidator(r'^[0-9]*$', 'only numbers allowed')
+	instructor = models.ForeignKey(Faculty, null=True, blank=False)
+	college = models.CharField(choices=College, default='NONE', max_length=7)
+	course_number = models.CharField(max_length=10, null=True)
+	CRN = models.CharField(validators=[numeric], max_length=5)
+
+	def __unicode__(self):
+		return self.course_number + ": " + self.CRN
 
 
 class Partner(models.Model):
-	pass
-
-class SubmitReport(models.Model):
-	start_time = models.TimeField(auto_now_add=False, auto_now=False)
-	end_time = models.TimeField(auto_now_add=False, auto_now=False)
-	#start_date = models.DateField(auto_now_add=False, auto_now=False, default=date.today)
-	#end_date = models.DateField(auto_now_add=False, auto_now=False, default=date.today)
-	summary = models.CharField(max_length=150, null=True, blank=True)
-	submitter = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
-		
-
+	name = models.CharField(max_length=100, null=True, default='New Partner Organization')
+	is_active = models.BooleanField(default=True, null=False)

@@ -27,8 +27,9 @@ urlpatterns = [
     url(r'^accounts/login/', login_view, name='login_page'),
     url(r'^accounts/auth/', auth_view, name='authorization_page'),
     url(r'^accounts/logout/', logout_view, name='logout_page'),
-    url(r'^accounts/loggedin/', logged_in_view, name='logged_in_page'),
+    url(r'^accounts/loggedin/', student_logged_in_view, name='student_logged_in_page'),
     url(r'^accounts/invalid/', invalid_login_view, name='invalid_login_page'),
+    url(r'^accounts/faculty_loggedin', FacultyView.as_view())
 ]
 
 #authentication urls
