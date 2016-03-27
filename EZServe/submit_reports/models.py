@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from datetime import date, time, datetime
 from django.core.validators import RegexValidator
-from annoying.fields import JSONField
 
 # Create your models here.
 
@@ -25,6 +24,13 @@ ApprovalStatus = (
 		('PENDING', 'PENDING'),
 		('APPROVED', 'APPROVED'),
 		('REJECTED', 'REJECTED'),
+	)
+
+ServiceType = (
+		('DIRECT_SERVICE', 'Direct Service'),
+		('TRAINING', 'Training'),
+		('IND_RESEARCH', 'Individual Research'),
+		('TEAM_RESEARCH', 'Team Research'),
 	)
 
 # User Classes
@@ -50,6 +56,13 @@ class Faculty(models.Model):
 
 class Staff(models.Model):
 	user = models.OneToOneField(User, null=True)
+	courses = models.ManyToManyField('Course')
+
+	def __unicode__(self):
+		return self.user.first_name + " " + self.user.last_name
+
+class AdminStaff(models.Model):
+	user = models.OneToOneField(User, null=True)
 
 	def __unicode__(self):
 		return self.user.first_name + " " + self.user.last_name
@@ -62,6 +75,8 @@ class SubmitReport(models.Model):
 	start_time = models.DateTimeField(auto_now_add=False, auto_now=False, default=datetime.now)
 	end_time = models.DateTimeField(auto_now_add=False, auto_now=False, default=datetime.now)
 	courses = models.ManyToManyField('Course')
+	service_type = models.CharField(max_length=14, null=True, blank=False)
+	status = models.CharField(max_length=8, choices=ApprovalStatus, default='PENDING', null=False, blank=False)
 	summary = models.CharField(max_length=150, null=True, blank=True)
 	submitter = models.ForeignKey(Student, null=True)
 		
