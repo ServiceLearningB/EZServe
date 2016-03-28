@@ -42,7 +42,7 @@ class Student(models.Model):
 	first_name = models.CharField(max_length=30, null=True, blank=False)
 	last_name = models.CharField(max_length=30, null=True, blank=False)
 	nuid = models.IntegerField(null=False, blank=False, default=0)
-	courses = models.ManyToManyField('Course')
+	courses = models.ManyToManyField('Course', related_name='students')
 	grad_year = models.CharField(validators=[numeric], max_length=4, null=True)
 
 	class Meta:
@@ -79,7 +79,7 @@ class SubmitReport(models.Model):
 	start_time = models.DateTimeField(auto_now_add=False, auto_now=False, default=datetime.now)
 	end_time = models.DateTimeField(auto_now_add=False, auto_now=False, default=datetime.now)
 	courses = models.ManyToManyField('Course')
-	service_type = models.CharField(max_length=14, null=True, blank=False)
+	service_type = models.CharField(max_length=14, null=True, blank=False, choices=ServiceType)
 	status = models.CharField(max_length=8, choices=ApprovalStatus, default='PENDING', null=False, blank=False)
 	summary = models.CharField(max_length=150, null=True, blank=True)
 	submitter = models.ForeignKey(Student, null=True, on_delete=models.PROTECT)
@@ -100,5 +100,8 @@ class Course(models.Model):
 
 
 class Partner(models.Model):
-	name = models.CharField(max_length=100, null=True, default='New Partner Organization')
+	name = models.CharField(max_length=100, null=True, default='New Partner Organization', unique=True)
 	is_active = models.BooleanField(default=True, null=False)
+
+	def __unicode__(self):
+		return self.name
