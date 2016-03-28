@@ -1,4 +1,4 @@
-from django import forms
+wfrom django import forms
 from django.forms import MultipleChoiceField
 from django.forms import Textarea, ModelForm, widgets
 from .models import SubmitReport, Partner

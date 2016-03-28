@@ -58,9 +58,9 @@ def auth_view(request):
 	user = auth.authenticate(username=username, password=password)
 	if user is not None:
 		auth.login(request, user)
-		return HttpResponseRedirect('student_logged_in_page')
+		return HttpResponseRedirect('/accounts/loggedin/')
 	else:
-		return HttpResponseRedirect('invalid_login_page')
+		return HttpResponseRedirect('/accounts/invalid/')
 
 
 def logout_view(request):
@@ -71,6 +71,7 @@ def logout_view(request):
 #Home pages for different users (and also bd login info)
 ###################################################################
 
+@login_required
 @user_passes_test(lambda u: u.is_superuser or u.student is not None)
 def student_logged_in_view(request):
 	"""Homepage for logged in users"""
@@ -83,6 +84,7 @@ def invalid_login_view(request):
 	return render_to_response('invalid_login.html')
 
 
+@login_required
 @user_passes_test(lambda u: u.is_superuser or u.adminstaff is not None)
 def admin_home_view(request):
 	"""Homepage for logged in admin"""
@@ -92,6 +94,7 @@ def admin_home_view(request):
 #Views for doing the actual stuff that users want to do
 ##########################################################################
 
+@login_required
 @user_passes_test(lambda u: u.is_superuser or u.adminstaff is not None)
 def add_partners_view(request):
 	'''Page for adding partners'''
@@ -106,7 +109,7 @@ def add_partners_view(request):
 		locals(),
 		context_instance=RequestContext(request))
 
-
+@login_required
 @user_passes_test(lambda u: u.is_superuser or u.adminstaff is not None)
 def add_student_view(request):
 	'''Page for adding partners'''
