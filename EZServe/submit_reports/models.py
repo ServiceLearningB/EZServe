@@ -36,7 +36,19 @@ ServiceType = (
 # User Classes
 ####################################################
 
+
+########################################################
+class StudentManager(models.Manager):
+	def create_student_without_user(self, first_name, last_name, nuid, grad_year):
+		student = self.create(first_name=first_name, last_name=last_name, nuid=nuid, grad_year=grad_year)
+		return student
+	
+	def create_student(self, user, nuid, grad_year):
+		student = self.create(user=user, first_name=user.first_name, last_name=user.last_name, nuid=nuid, grad_year=grad_year)
+		return student
+
 class Student(models.Model):
+	objects= StudentManager()
 	numeric = RegexValidator(r'^[0-9]*$', 'only numbers allowed')
 	user = models.OneToOneField(User, null=True, unique=True, on_delete=models.SET_NULL)
 	first_name = models.CharField(max_length=30, null=True, blank=False)
@@ -51,12 +63,24 @@ class Student(models.Model):
 	def __unicode__(self):
 		return self.user.first_name + " " + self.user.last_name + " (" + str(self.nuid) + ")"
 
+##############################################################
+
+class FacultyManager(models.Manager):
+	def create_student(self, user, nuid, grad_year):
+		faculty = self.create(user=user)
+		faculty.user = user
+		return student
+
+
 class Faculty(models.Model):
+	objects = FacultyManager()
 	user = models.OneToOneField(User, null=True)
 
 	def __unicode__(self):
 		return self.user.first_name + " " + self.user.last_name
 
+
+###############################################################
 
 class Staff(models.Model):
 	user = models.OneToOneField(User, null=True)
@@ -64,6 +88,8 @@ class Staff(models.Model):
 
 	def __unicode__(self):
 		return self.user.first_name + " " + self.user.last_name
+
+################################################################
 
 class AdminStaff(models.Model):
 	user = models.OneToOneField(User, null=True)

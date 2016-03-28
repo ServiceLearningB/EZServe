@@ -14,6 +14,14 @@ class SubmitReportForm(forms.ModelForm):
 			'summary': Textarea(attrs={'cols': 50, 'rows': 3}),
 		}
 
+		def clean(self):
+			cleaned_data = super(SubmitReportForm, self).clean()
+			start_time = cleaned_data['start_time']
+			end_time = cleaned_data['end_time']
+
+			if (end_time <= start_time):
+				raise forms.ValidationError("Start time must come before end time.")
+
 
 class AddPartnerForm(forms.ModelForm):
 	class Meta:

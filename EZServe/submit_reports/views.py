@@ -1,7 +1,7 @@
 from django.shortcuts import render, render_to_response, RequestContext
 from .forms import SubmitReportForm, AddPartnerForm
 from .models import SubmitReport, Student, Faculty, Staff, Course
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import auth
 from django.views.generic.list import ListView
 from django.template.context_processors import csrf
@@ -9,7 +9,10 @@ from django.contrib.auth.decorators import login_required,user_passes_test, perm
 from django.contrib.auth.mixins import UserPassesTestMixin
 # Create your views here.
 
-@login_required
+
+@login_required(redirect_field_name=None)
+@user_passes_test(lambda u: u.is_superuser or u.student is not None, redirect_field_name=None,
+	login_url='/accounts/login/')
 def submit_page(request):
 	'''Page for submitting records, accessible to student users'''
 	student = Student.objects.get(user=request.user)
@@ -20,7 +23,7 @@ def submit_page(request):
 		save_form.submitter=student
 		save_form.save()
 		save_form.save_m2m()
-		return HttpResponseRedirect('/accounts/loggedin')
+		return HttpResponseRedirect('student_logged_in_page')
 	return render_to_response("submit_report.html",
 		locals(),
 		context_instance=RequestContext(request))
@@ -55,9 +58,9 @@ def auth_view(request):
 	user = auth.authenticate(username=username, password=password)
 	if user is not None:
 		auth.login(request, user)
-		return HttpResponseRedirect('/accounts/loggedin')
+		return HttpResponseRedirect('student_logged_in_page')
 	else:
-		return HttpResponseRedirect('/accounts/invalid')
+		return HttpResponseRedirect('invalid_login_page')
 
 
 def logout_view(request):
@@ -98,7 +101,7 @@ def add_partners_view(request):
 		save_form.save()
 		if '_add_another' in request.POST:
 			return HttpResponseRedirect('/admin/add_partner')
-		return HttpResponseRedirect('/admin/home')
+		return HttpResponseRedirect('admin_home_page')
 	return render_to_response("add_partner.html",
 		locals(),
 		context_instance=RequestContext(request))
@@ -113,7 +116,7 @@ def add_student_view(request):
 		save_form.save()
 		if '_add_another' in request.POST:
 			return HttpResponseRedirect('/admin/add_student')
-		return HttpResponseRedirect('/admin/home')
+		return HttpResponseRedirect('admin_home_page')
 	return render_to_response("add_student.html",
 		locals(),
 		context_instance=RequestContext(request))
