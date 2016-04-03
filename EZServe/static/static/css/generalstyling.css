@@ -115,17 +115,16 @@
           transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
-.EZ_Hoursform textarea {
-  width:100%;
-}
-
 .EZ_Hoursform .errorlist {
 	color: #cc0000;
 	position: relative;
 	float: left;
+	width: 100%;
 }
 
 .EZ_Hoursform p {
+	position: relative;
+	float: left;
 	width: 100%;
 }
 
@@ -133,14 +132,31 @@
 	position: relative;
 	float: left;
 	width: 20%;
+	text-align: left;
+	margin-left: 2.5%;
 }
 
-.EZ_Hoursform p input {
+.EZ_Hoursform p input, .EZ_Hoursform p select, .EZ_Hoursform p textarea {
+	position: relative;
+	float: right;
+	width: 75%;
+	margin-right:2.5%;
+}
+
+.EZ_Hoursform p select option {
 	position: relative;
 	float: left;
-	width: 70%;
+	width:100%;
+	margin: auto;
 }
 
 .EZ_Hoursform .EZ_submitrow .btn {
-	width: 49%;
+	width: 35%;
+	margin: 1.5%;
+}
+.EZ_Hoursform .EZ_submitrow {
+	width: 100%;
+	position:relative;
+	float: right;
+	left:10%;
 }
