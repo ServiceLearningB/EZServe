@@ -9,11 +9,28 @@
 	width:100%;
 	position: relative;
 	height:60px;
+	border-color:rgb(160,160,145);
 }
 
 .EZ_col {
 	position: relative;
 	float: left;
+}
+
+.EZ_col h2 {
+	text-align: center;
+}
+
+.EZ_col pre {
+	padding-top: 30px;
+	width:100%;
+	position: relative;
+	float:left;
+	margin-top: 10px;
+}
+
+.EZ_col p {
+	text-align: center;
 }
 
 .EZ_logincontainer {
